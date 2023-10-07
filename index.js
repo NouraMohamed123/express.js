@@ -21,9 +21,9 @@ app.all('*', (req, res, next) => {
 });
 
 //global middelware error handelr
-// app.use((error,req,res,next)=>{
-//     res.json(error);
-// });
+app.use((error,req,res,next)=>{
+    res.json(error);
+});
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });

@@ -1,25 +1,32 @@
 
 // let {courses} = require('../data/courses');
 const Course = require('../model/model.cources');
-
+const asyncWrapper = require('../middelware/asyncWrapper');
+const appError = require('../utilites/appError');
 const { validationResult } = require('express-validator')
 
-const getAllCourses = async (req, res) => {
-   try {
+const getAllCourses = asyncWrapper(
+   async (req, res,next) => {
+   // try {
       const query = req.query;
       const limit = query.limit || 2;
       const page = query.page || 1;
       const skip = (page - 1) * limit;
       const courses = await Course.find({ __v: false }).limit(limit).skip(skip); //using {} to query filter or opton
+     
+      if (!courses){
+       const error =  appError.create('Course not found',400)
+         return next(error);
+       //  return res.status(404).json({ message: "Course not found" });
+      } 
+           
       return res.status(200).json(courses);
-      if (!course) return res.status(404).json({ message: "Course not found" });
-
-      res.json(course);
-   } catch (error) {
-      return res.status(500).json({ message: error.message });
-   }
+   // } catch (error) {
+   //    return res.status(500).json({ message: error.message });
+   // }
 
 }
+)
 
 const getCourse = async (req, res) => {
    //  const course = courses.find((course) => course.id == req.params.id);
