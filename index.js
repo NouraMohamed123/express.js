@@ -15,7 +15,9 @@ app.use(express.json());
 //global middelware for not found router 
 
 const coursesRouter = require('./router/router');
+const usersRouter = require('./router/user.router');
 app.use('/api/courses/', coursesRouter);
+app.use('/api/users/', usersRouter);
 app.all('*', (req, res, next) => {
     res.send('not found');
 });
