@@ -5,6 +5,8 @@ const asyncWrapper = require('../middelware/asyncWrapper');
 const appError = require('../utilites/appError');
 const { validationResult } = require('express-validator')
 var bcrypt = require('bcryptjs');
+const generatejwt = require('../utilites/generatejwt');
+
 const getAllUser = asyncWrapper(
    async (req, res, next) => {
       // try {
@@ -27,10 +29,11 @@ const getAllUser = asyncWrapper(
 )
 const Register = asyncWrapper(async (req, res, next) => {
    const oldUser = await User.findOne({ email: req.body.email });
-   if (oldUser) {
-      const error = appError.create('user already exist ', 400)
-      return next(error);
-   }
+   console.log(oldUser)
+   // if (oldUser) {
+   //    const error = appError.create('user already exist ', 400)
+   //    return next(error);
+   // }
    const user = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -38,14 +41,18 @@ const Register = asyncWrapper(async (req, res, next) => {
       password: await bcrypt.hash(req.body.password, 8)
    });
    const users = await user.save();
-   return res.status(200).json(users);
+   return res.status(200).json(user);
 
 })
 const Login = asyncWrapper(async (req, res, next) => {
+  
    const { email, password } = req.body;
    const user = await User.findOne({ email: req.body.email });
-   if (user && user.password == bcrypt.compare(password, user.password)) {
-      return res.status(200).json({ message: 'login successful' })
+  
+   var token = generatejwt({ email:user.email, id:user._id });
+
+   if (user &&  bcrypt.compare(password, user.password)) {
+      return res.status(200).json({ message: 'login successful',token: token });
    } else {
       const error = appError.create('email and user not success ', 400)
       return next(error);
