@@ -10,6 +10,7 @@ const generatejwt = require('../utilites/generatejwt');
 const getAllUser = asyncWrapper(
    async (req, res, next) => {
       // try {
+       
       const query = req.query;
       const limit = query.limit || 2;
       const page = query.page || 1;
@@ -49,7 +50,7 @@ const Login = asyncWrapper(async (req, res, next) => {
    const { email, password } = req.body;
    const user = await User.findOne({ email: req.body.email });
   
-   var token = generatejwt({ email:user.email, id:user._id });
+   var token = await generatejwt({ email:user.email, id:user._id });
 
    if (user &&  bcrypt.compare(password, user.password)) {
       return res.status(200).json({ message: 'login successful',token: token });
